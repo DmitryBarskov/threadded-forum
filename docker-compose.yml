@@ -1,0 +1,49 @@
+version: "3.6"
+networks:
+  frontend:
+  backend:
+services:
+  db:
+    image: postgres:12-alpine
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: db-password
+    networks:
+      - backend
+  web:
+    build: .
+    # We want to avoid mapping Gemfile.lock, yarn.lock, etc but there is no way to exclude
+    # files using `volumes`.
+    volumes:
+    - ./.rspec:/threadded-forum/.rspec
+    - ./Procfile.docker.dev:/threadded-forum/Procfile.docker.dev
+    - ./Rakefile:/threadded-forum/Rakefile
+    - ./config.ru:/threadded-forum/config.ru
+    - ./app:/threadded-forum/app
+    - ./bin:/threadded-forum/bin
+    - ./config:/threadded-forum/config
+    - ./db:/threadded-forum/db
+    - ./lib:/threadded-forum/lib
+    - ./script:/threadded-forum/script
+    - ./vendor:/threadded-forum/vendor
+    - ./spec:/threadded-forum/spec
+    working_dir: /threadded-forum
+    environment:
+      DB: postgresql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: root
+      DB_PASSWORD: db-password
+      BUNDLE_GEMFILE: /threadded-forum/Gemfile
+      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+    command: script/docker-dev-start-web.sh
+    networks:
+      - backend
+      - frontend
+    ports:
+      - "9292:9292"
+      - "3035:3035"
+    depends_on:
+      - db
