@@ -108,5 +108,11 @@ Rails.application.configure do
   # these configuration options.
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
-  # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+  # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session  
+  # Set the default URL options for both Roadie and ActionMailer:
+  config.roadie.url_options = config.action_mailer.default_url_options = {
+    host: Settings.hostname,
+    protocol: 'https',
+  }
+
 end
